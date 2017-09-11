@@ -3,7 +3,7 @@ import {parseComment} from 'jsdoc-to-condition'
 import {getLocation, isProcessed, markProcessed, validate} from './util';
 import {generateAssert} from './generators';
 import {flatten} from 'lodash';
-import {Types} from './babel-types';
+import {BabelPath, Types} from './babel-types';
 
 type PluginOptions = {
     mode?: string,
@@ -13,11 +13,6 @@ type PluginOptions = {
 // `comment` node contains @type, return true
 function containsTypeComment(comment: void | { value: string }): boolean {
     return comment ? false : /@type/.test(comment.value);
-}
-
-
-function hasBinding(scope, params = [], name) {
-    return scope.hasBinding(name) || params.find(param => param.loc.identifierName === name);
 }
 
 export default function ({types: t, template}: { types: Types }) {
@@ -39,42 +34,53 @@ export default function ({types: t, template}: { types: Types }) {
     //     }
     // }
 
-    function injectParameterAssert(path, leadingComments, state) {
+    function injectParameterAssert(path: BabelPath, leadingComments, state) {
         if (isProcessed(path) || !validate(leadingComments, state)) {
             return;
         }
 
         markProcessed(path);
 
+        let bindings = {};
+
+        path.node.params.forEach(param => {
+            if (param.name !== param.loc.identifierName) {
+                bindings[param.loc.identifierName] = param.name;
+            }
+        });
+
         let comments = leadingComments.map(comment => `/*${comment.value}*/`),
-            items = flatten(comments.map(comment => parseComment(comment, {unwrap: true})));
+            items = flatten(comments.map(comment => parseComment(comment, {unwrap: true, bindings})));
 
         if (!items.length || !path.node.loc) {
             return;
         }
 
         let asserts = [],
-            assertedBindings = [],
             location = getLocation(path, state),
             bodyPath = path.get('body');
 
         items.forEach(item => {
-            let {name} = item.tag,
-                binding = String(name).replace(/\..*$/, ''),
-                asserted = assertedBindings.includes(binding);
+            let {name, binding} = item.tag;
 
-            assertedBindings.push(binding);
-
-            if (!asserted && !hasBinding(bodyPath.scope, path.node.params, binding)) {
-                throw new Error(`${location}: Parameter ${binding} described in JSDoc doesn't exist`);
+            if (name in bindings) {
+                binding = bindings[name];
+            } else if (bodyPath.scope.hasBinding(binding)) {
+                binding = name;
             } else {
-                asserts.push(generateAssert({
-                    validation: item.validation,
-                    tag: item.tag,
-                    options: state.opts,
-                    location
-                }));
+                throw new Error(`${location}: Parameter ${binding} described in JSDoc doesn't exist`);
             }
+
+            bindings[name] = binding;
+
+            asserts.push(generateAssert({
+                name,
+                binding,
+                validation: item.validation,
+                tag: item.tag,
+                options: state.opts,
+                location
+            }));
         });
 
         let ast = template(asserts.join('\n'))();

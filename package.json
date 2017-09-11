@@ -9,7 +9,7 @@
   "scripts": {
     "build": "babel src --out-dir lib --source-maps",
     "watch": "babel src --out-dir lib --watch --source-maps",
-    "prepublish": "npm run build",
+    "prepublish": "npm run build && npm test",
     "test": "ava",
     "start": "npm run watch | ava -w"
   },
@@ -36,7 +36,7 @@
   "dependencies": {
     "doctrine": "^2.0.0",
     "escape-regex-string": "^1.0.4",
-    "jsdoc-to-condition": "^0.2.1",
+    "jsdoc-to-condition": "^0.3.0",
     "lodash": "3||4"
   },
   "ava": {

@@ -13,7 +13,9 @@ readDir(fixturesDir).then(dirs => {
         test(`should generate assertions for ${caseName.replace(/-/g, ' ')}`, async t => {
             let actualPath = path.join(fixturesDir, caseName, 'actual.js');
             let actual = await transformFile(actualPath, {
+                'babelrc': false,
                 'plugins': [
+                    'transform-es2015-function-name',
                     require.resolve('../')
                 ]
             });

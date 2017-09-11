@@ -1,11 +1,10 @@
 // @flow
 import doctrine from 'doctrine';
 
-export function generateAssert({validation, location, tag, options: {mode, logger}}) {
-    let {name} = tag,
-        type = doctrine.type.stringify(tag.type, {compact: true});
+export function generateAssert({name, binding, validation, location, tag, options: {mode, logger}}) {
+    let type = doctrine.type.stringify(tag.type, {compact: true});
 
-    let message = `'${location}: Expected \`${name}\` to have type ${type}, got: ' + (typeof ${name})`;
+    let message = `'${location}: Expected \`${name}\` to have type ${type}, got: ' + (typeof ${binding})`;
 
     return `if (!${validation}) {${generateWarn({message, mode, logger})}}`;
 }
