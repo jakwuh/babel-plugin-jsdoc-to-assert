@@ -47,7 +47,7 @@ function lonelyFunction(param, b, c) {
 ### Usage
 
 ```bash
-yarn add babel-plugin-jsdoc-to-condition --deb
+yarn add babel-plugin-jsdoc-to-condition --dev
 ```
 
 ```json
