@@ -54,7 +54,7 @@ yarn add babel-plugin-jsdoc-to-condition --dev
 // .babelrc
 {
     "plugins": [
-        ["babel-plugin-jsdoc-to-condition", {
+        ["jsdoc-to-condition", {
             "ignore": ["node_modules/"],
             "logger": "debugger; console.info"
         }]
