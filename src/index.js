@@ -61,17 +61,12 @@ export default function ({types: t, template}: { types: Types }) {
             bodyPath = path.get('body');
 
         items.forEach(item => {
-            let {name, binding} = item.tag;
+            let {name, binding} = item.tag,
+                varBinding = binding.split('.')[0];
 
-            if (name in bindings) {
-                binding = bindings[name];
-            } else if (bodyPath.scope.hasBinding(binding)) {
-                binding = name;
-            } else {
+           if (!bodyPath.scope.hasBinding(varBinding)) {
                 throw new Error(`${location}: Parameter ${binding} described in JSDoc doesn't exist`);
             }
-
-            bindings[name] = binding;
 
             asserts.push(generateAssert({
                 name,

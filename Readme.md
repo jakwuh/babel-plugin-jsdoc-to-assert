@@ -29,7 +29,7 @@ After:
  */
 function lonelyFunction(param, b, c) {
   if (!(typeof param === 'number')) {
-    console._warn('actual.js:6:0: Expected `param` to have type number, got: ' + typeof param);␊
+    console._warn('actual.js:6:0: Expected `param` to have type number, got: ' + typeof param);
   }
 
   if (!(typeof b === 'string')) {
