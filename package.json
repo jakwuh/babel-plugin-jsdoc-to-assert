@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-jsdoc-to-condition",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "A babel plugin which creates validation code from jsdoc comments",
   "main": "lib/index.js",
   "repository": "git@github.com:jakwuh/babel-plugin-jsdoc-to-condition.git",
@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "doctrine": "^2.0.0",
+    "jsdoc-to-condition": "^0.2.1",
     "lodash": "3||4"
   },
   "ava": {
