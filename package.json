@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "doctrine": "^2.0.0",
+    "escape-regex-string": "^1.0.4",
     "jsdoc-to-condition": "^0.2.1",
     "lodash": "3||4"
   },

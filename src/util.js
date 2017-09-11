@@ -1,11 +1,17 @@
 // @flow
 import {basename} from 'path';
+import escapeRegexString from 'escape-regex-string';
+import {isRegExp} from 'lodash';
+
+function buildRegex(strOrRegex: string|RegExp): RegExp {
+    return isRegExp(strOrRegex) ? strOrRegex : new RegExp(escapeRegexString(strOrRegex));
+}
 
 export function validate(leadingComments: string[] | null, state: any) {
     let {opts: {ignore = []}} = state,
         filename = getFilename(state);
 
-    if (ignore.some(regexp => regexp.test(filename))) {
+    if (ignore.map(buildRegex).some(regexp => regexp.test(filename))) {
         return false;
     }
 
