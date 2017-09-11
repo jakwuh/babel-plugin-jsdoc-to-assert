@@ -1,0 +1,10 @@
+node_modules/
+tests/
+.babelrc
+.editorconfig
+.flowconfig
+.gitignore
+.travis.yml
+.npmignore
+package-lock.json
+.idea/
