@@ -1,4 +1,0 @@
-/**
- * @type {MyObject}
- */
-const value = {};
