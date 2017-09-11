@@ -1,38 +1,31 @@
-// LICENSE : MIT
-"use strict";
-const doctrine = require("doctrine");
-import {trimSpaceEachLine} from "./util";
-export class SimpleGenerator {
-  assert(expression) {
-    const trimmedExpression = trimSpaceEachLine(expression.split("\n")).join("");
-    return `console.assert(${trimmedExpression});`;
-  }
-}
-export class NodeAssertGenerator {
-  assert(expression) {
-    const trimmedExpression = trimSpaceEachLine(expression.split("\n")).join("");
-    return `assert(${trimmedExpression}, 'Invalid JSDoc: ${trimmedExpression}');`;
-  }
-}
-export class SpecGenerator {
-  constructor(tag) {
-    this.nameOfValue = tag.name;
-    this.typeString = doctrine.type.stringify(tag.type, {compact: true});
-    this.jsdocLikeString = `@${tag.title} {${this.typeString}} ${tag.name}`;
-  }
+// @flow
+import doctrine from 'doctrine';
 
-  assert(expression) {
-    const trimmedExpression = trimSpaceEachLine(expression.split("\n")).join("");
-    const expectedMessage = `Expected type: ${this.jsdocLikeString}`;
-    const actualMessage = `Actual value:`;
-    const failureMessage = `Failure assertion:`;
-    const actualValue = this.nameOfValue;
-    return `console.assert(${trimmedExpression}, '${expectedMessage}\\n${actualMessage}', ${actualValue},'\\n${failureMessage} ${trimmedExpression}');`;
-  }
+export function generateAssert({validation, location, tag, options: {generator}}) {
+    let {name} = tag,
+        type = doctrine.type.stringify(tag.type, {compact: true});
+
+    let message = `'${location}: Expected \`${name}\` to have type ${type}, got: ' + (typeof ${name})`;
+
+    return `if (!${validation}) {${generateWarn({message, generator})}}`;
 }
-export class ThrowGenerator {
-  assert(expression) {
-    const trimmedExpression = trimSpaceEachLine(expression.split("\n")).join("");
-    return `if(!(${trimmedExpression})){ throw new TypeError('Invalid JSDoc: ${trimmedExpression}'); }`;
-  }
+
+function generateWarn({message, generator}) {
+    return (generators[generator] || generators.warn)({message})
 }
+
+const generators = {
+    warn: ({message}) => `
+        console._warn(${message});
+    `,
+    debugger: ({message}) => `
+        console.warn(${message});
+        debugger;
+    `,
+    trace: ({message}) => `
+        console.trace(${message});
+    `,
+    throw: ({message}) => `
+        throw new Error(${message});
+    `
+};
