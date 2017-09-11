@@ -10,29 +10,7 @@ type PluginOptions = {
     logger?: string
 }
 
-// `comment` node contains @type, return true
-function containsTypeComment(comment: void | { value: string }): boolean {
-    return comment ? false : /@type/.test(comment.value);
-}
-
 export default function ({types: t, template}: { types: Types }) {
-
-    // function injectTypeAssert(declarationsPath, identifierName, leadingComments, state) {
-    //     let Generator = getGenerator(options.generator, state);
-    //
-    //     let
-    // asserts = leadingComments.reduce((asserts, comment) => {
-    //         return asserts.concat(CommentConverter.toTypeAsserts(identifierName, comment, {Generator}));
-    //     }, []);
-    //
-    //     if (asserts.length) {
-    //         let functionDeclarationString = trimSpaceEachLine(asserts).join('\n');
-    //         let builtAssert = template(functionDeclarationString)();
-    //         if (builtAssert) {
-    //             declarationsPath.insertAfter(builtAssert);
-    //         }
-    //     }
-    // }
 
     function injectParameterAssert(path: BabelPath, leadingComments, state) {
         if (isProcessed(path) || !validate(leadingComments, state)) {
